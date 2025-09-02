@@ -12,7 +12,7 @@ ARG_SIZE_KB=0
 parse_args() {
     if [ "$#" -ne 6 ]; then
         usage_short
-        die "need exactly 6 params, got: $#"
+        die "Нужно 6 параметров, получили: $#"
     fi
 
     P1="$1"; P2="$2"; P3="$3"; P4="$4"; P5="$5"; P6="$6"
@@ -35,7 +35,7 @@ parse_args() {
     ARG_N_FILES="$P4"
 
     # P5: letters.ext
-    set -- $(split_letters_ext "$P5")
+    set -- $(split_letters_ext "$P5") # -- не перезаписываем позиционные параметры 
     name="$1"; ext="$2"
     ensure_letters "$name"; ensure_len_range "$name" 1 7
     ensure_letters "$ext"; ensure_len_range "$ext" 1 3 
