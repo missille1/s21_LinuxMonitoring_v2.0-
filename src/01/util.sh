@@ -19,7 +19,7 @@ usage_short() {
     echo "Использование:" >&2
     echo " ./main.sh <abs_path> <folders_count> <letters_dirs> <files_per_dir> <letters.ext> <sizekb>" >&2
     echo "Пример:" >&2
-    echo " ./main.sh /opt/test 4 az 5 az.az 3kb" >&2
+    echo " ./main.sh /tmp/test 4 az 5 az.az 3kb" >&2
 }
 
 # целое число (0..)
