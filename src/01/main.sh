@@ -25,3 +25,6 @@ printf " size.kb        = %s\n" "$ARG_SIZE_KB"
 
 run_core
 
+# check file size
+# du -B1 --apparent-size /tmp/xtest1/azaz_030925/azaz_030925.az
+# MIN_FREE_KB=8651600 ./main.sh /tmp/xtest1 4 az 5 az.az 3kb ; echo $?

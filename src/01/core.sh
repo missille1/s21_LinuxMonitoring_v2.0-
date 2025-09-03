@@ -84,10 +84,10 @@ plan_files_for_dir() {
 # проверка freespace
 check_free_space_or_exit() {
   # 1 gb = 1048576 kb
-  min_free_kb="${MIN_FREE_KB:-1048576}"
+  min_free_kb="${MIN_FREE_KB:-1048576}" # берем либо глобалку либо указанный размер
   avail_kb=$(df -Pk / | awk 'NR==2{print $4}')
   if [ "$avail_kb" -le "$min_free_kb" ]; then
-    printf "Недостаточно места в /: %sКБ - скрипт остановлен\n" "$avail_kb" "min_free_kb" >&2
+    printf "Недостаточно места в /: %sКБ <= %sКБ - скрипт остановлен\n" "$avail_kb" "$min_free_kb" >&2
     exit 3
   fi
 }
