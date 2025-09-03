@@ -33,6 +33,7 @@ parse_args() {
     # P4: файлов на папку >=0
     ensure_unit_ge "$P4" 0
     ARG_N_FILES="$P4"
+    [ "$ARG_N_FILES" -eq 0 ] && printf "[info] files/dir=0 — создаём только папки\n"
 
     # P5: letters.ext
     set -- $(split_letters_ext "$P5") # -- не перезаписываем позиционные параметры 

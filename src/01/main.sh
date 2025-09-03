@@ -4,6 +4,8 @@ source ./util.sh
 source ./args.sh
 source ./core.sh
 
+set -u 
+
 print_usage() {
     echo "Usage:"
     echo " ./main.sh <abs_path> <folders_count> <letters_dirs> <files_per_dir> <letters.ext> <size_kb|sizekb>"
@@ -17,7 +19,9 @@ printf "[OK] parsed:\n"
 printf " path           = %s\n" "$ARG_PATH"
 printf " folders        = %s\n" "$ARG_N_DIRS"
 printf " letters_dirs   = %s\n" "$ARG_LETTERS_DIRS"
-printf " files/dir      = %s\n" "$ARG_AND_FILES"
+printf " files/dir      = %s\n" "$ARG_N_FILES"
 printf " letters.ext    = %s.%s\n" "$ARG_FILE_LETTERS" "$ARG_FILE_EXT"
 printf " size.kb        = %s\n" "$ARG_SIZE_KB"
+
+run_core
 

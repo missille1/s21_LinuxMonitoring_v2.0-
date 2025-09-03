@@ -52,7 +52,7 @@ ensure_unit_between() {
 split_letters_ext() {
     s="$1"
     name=$(printf "%s" "$s" | cut -d. -f1)
-    ext=$( printf "%s" "$s" | cut -d. -f2)
+    ext=$(printf "%s" "$s" | cut -d. -f2)
     # -n не пусто
     [ -n "$name" ] && [ -n "$ext" ] || die "P5 должно быть в формате az.az, получили: '$s'" 
     echo "$name" "$ext"
