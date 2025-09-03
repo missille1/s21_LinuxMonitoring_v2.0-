@@ -11,4 +11,4 @@ print_info
 run_core
 
 # test for memory
-# MIN_FREE_KB=8651600 ./main.sh /tmp/xtest1 4 az 5 az.az 3kb ; echo $?
+# MIN_FREE_KB=6103575 ./main.sh /tmp/xtest1 4 az 5 az.az 3kb ; echo $?
