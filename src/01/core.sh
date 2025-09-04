@@ -8,32 +8,25 @@ date_tag() {
 # создаем уникальные имена
 # повторяем буквы несколько раз + префикс первых букв 
 seq_for_index() {
-  letters="$1"; idx="$2"
-  
-  # базовая часть >= 4 символов, сохраняем порядок
-  base="$letters"
-  while [ "${#base}" -lt 4 ]; do
-    base="$base$letters"
+  letters="$1"; idx="$2"; minlen="${3:-4}"   # для 01 minlen=4
+  L=${#letters}
+
+  target=$(( minlen + idx - 1 ))     # растим длину с индексом
+  extra=$(( target - L )); [ "$extra" -lt 0 ] && extra=0
+
+  q=$(( extra / L ))                 # добавить каждой букве
+  r=$(( extra % L ))                 # первым r буквам ещё по 1
+
+  out=""
+  p=1
+  while [ "$p" -le "$L" ]; do
+    ch=$(printf "%s" "$letters" | cut -c"$p")
+    cnt=$((1 + q)); [ "$p" -le "$r" ] && cnt=$((cnt+1))
+    k=1; while [ "$k" -le "$cnt" ]; do out="${out}${ch}"; k=$((k+1)); done
+    p=$((p+1))
   done
 
-  # добавление уникальности idx-1 символов циклом по одной букве
-  extra_cnt=$((idx - 1))
-  if [ "$extra_cnt" -gt 0 ]; then
-    # добавляем в конце по одной букве
-    L=${#letters}
-    reps=$(( (extra_cnt + L - 1)/ L))
-    tail=""
-    r=1
-    while [ "$r" -le "$reps" ]; do
-      tail="$tail$letters"
-      r=$((r+1))
-    done
-    # берем первый символ для tail
-    tail=$(printf "%s" "$tail" | cut -c1-"$extra_cnt")
-    base="$base$tail"
-  fi
-
-  printf "%s" "$base"
+  printf "%s" "$out"
 }
 
 # проверка freespace
@@ -71,7 +64,7 @@ run_core() {
   while [ "$i" -le "$ARG_N_DIRS" ]; do
     check_free_space_or_exit
 
-    d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
+    d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i" 4)"
     dir="${base_path}/${d_body}_${dtag}"
 
     mkdir -p "$dir" || die "Ошибка mkdir: $dir"
@@ -82,7 +75,7 @@ run_core() {
     while [ "$j" -le "$ARG_N_FILES" ]; do
       check_free_space_or_exit
 
-      f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j")"
+      f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j" 4)"
       file="${dir}/${f_body}_${dtag}.${ARG_FILE_EXT}"
 
       create_file_kb "$file" "$ARG_SIZE_KB" || die "Ошибка создания файла: $file"
