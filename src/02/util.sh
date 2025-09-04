@@ -9,7 +9,7 @@ print_info() {
 	printf "[OK] parsed:\n"
 	printf " letters_dirs   = %s\n" "$ARG_LETTERS_DIRS"
 	printf " letters.ext    = %s.%s\n" "$ARG_FILE_LETTERS" "$ARG_FILE_EXT"
-	printf " size.kb        = %s\n" "$ARG_SIZE_MB"
+	printf " size.mb        = %s\n" "$ARG_SIZE_MB"
 }
 
 usage_short() {

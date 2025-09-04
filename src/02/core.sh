@@ -58,7 +58,7 @@ check_free_space_or_exit() {
 
 create_file_mb() {
 	path="$1"
-	size_kb="$2"
+	size_mb="$2"
 	# /dev/zero - создаст поток нулевых байтов, conv=fsync гарантирует запись на диск перед завершением
 	# status - тихий режим
 	dd if=/dev/zero of="$path" bs=1M count="$size_mb" conv=fsync status=none \
@@ -104,9 +104,9 @@ run_core() {
 
 			check_free_space_or_exit
 
-			d_body="$(seq_for_index "$ARG_FILE_DIRS" "$i")"
+			d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 			dir="${current}/${d_body}_${dtag}"
-
+			
 			mkdir -p "$dir" || die "Папка: $dir"
 			printf "Папка %s\n" "$dir"
 			printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
