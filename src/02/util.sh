@@ -7,12 +7,9 @@ die() {
 
 print_info() {
 	printf "[OK] parsed:\n"
-	printf " path           = %s\n" "$ARG_PATH"
-	printf " folders        = %s\n" "$ARG_N_DIRS"
 	printf " letters_dirs   = %s\n" "$ARG_LETTERS_DIRS"
-	printf " files/dir      = %s\n" "$ARG_N_FILES"
 	printf " letters.ext    = %s.%s\n" "$ARG_FILE_LETTERS" "$ARG_FILE_EXT"
-	printf " size.kb        = %s\n" "$ARG_SIZE_KB"
+	printf " size.kb        = %s\n" "$ARG_SIZE_MB"
 }
 
 usage_short() {
