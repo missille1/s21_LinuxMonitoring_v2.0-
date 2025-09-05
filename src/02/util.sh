@@ -52,11 +52,11 @@ split_letters_ext() {
 	s="$1"
 	# Ровно одна точка
     dots=$(printf "%s" "$s" | awk -F. '{print NF-1}')
-    [ "$dots" -eq 1 ] || die "P5 должен быть в формате letters.ext, получили: '$s'"
+    [ "$dots" -eq 1 ] || die "P3 должен быть в формате letters.ext, получили: '$s'"
 	name=$(printf "%s" "$s" | cut -d. -f1)
 	ext=$(printf "%s" "$s" | cut -d. -f2)
 	# -n не пусто
-	[ -n "$name" ] && [ -n "$ext" ] || die "P5 должно быть в формате az.az, получили: '$s'"
+	[ -n "$name" ] && [ -n "$ext" ] || die "P3 должно быть в формате az.az, получили: '$s'"
 	echo "$name" "$ext"
 }
 
