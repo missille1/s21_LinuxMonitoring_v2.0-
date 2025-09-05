@@ -123,5 +123,6 @@ run_core() {
 	dur=$((end_ts - start_ts))
 	dur_hms="$(fmt_dur_hms "$dur")"
 
-	printf "Начало: %s\nКонец:	%s\nВыполнение: %s\n" "$start_at" "$end_at" "$dur_hms" | tee -a "$log"
+	printf "Начало: %s\nКонец:	%s\nВыполнение: %s\n" "$start_at" "$end_at" "$dur_hms"\
+	\n[ok] Создано. Лог: %s\n" "$log | tee -a "$log"
 }
