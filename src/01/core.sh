@@ -65,7 +65,8 @@ run_core() {
 	# по файлам в каждой папке
 	base_path="${ARG_PATH%/}"
 	dtag="$(date_tag)"
-	log="${base_path}/create_${dtag}_$(date +%H%M%S).log"
+	log_base="/var/tmp"; [ -w "$log_base" ] || log_base="/tmp"
+  	log="${log_base}/create_${dtag}_$(date +%H%M%S)_$$.log"
 
 	# создание
 	mkdir -p "$base_path" 2>/dev/null || die "Не могу создать базовую директорию: $base_path"
