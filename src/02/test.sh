@@ -36,4 +36,4 @@ seq_for_index() {
 	printf "%s" "$out"
 }
 
-seq_for_index az 2
+seq_for_index azaz 3
