@@ -12,20 +12,16 @@ seq_for_index() {
 	idx="$2"
 	minlen=4 # для 01 minlen=4
 	L=${#letters}
-
 	if [ "$L" -gt "$minlen" ]; then
 		target_base="$L"
 	else
 		target_base="$minlen"
 	fi
-
 	target=$((target_base + idx - 1))
 	extra=$((target - L))
-	[ "$extra" -lt 0 ] && extra=0
-
+	# [ "$extra" -lt 0 ] && extra=0
 	q=$((extra / L)) # добавить каждой букве
 	r=$((extra % L)) # первым r буквам ещё по 1
-
 	out=""
 	p=1
 	while [ "$p" -le "$L" ]; do
@@ -78,30 +74,22 @@ run_core() {
 	i=1
 	while [ "$i" -le "$ARG_N_DIRS" ]; do
 		check_free_space_or_exit
-
-		d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i" 4)"
+		d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 		dir="${base_path}/${d_body}_${dtag}"
-
 		mkdir -p "$dir" || die "Ошибка mkdir: $dir"
 		printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
 		printf "Папка %s\n" "$dir"
-
 		j=1
 		while [ "$j" -le "$ARG_N_FILES" ]; do
 			check_free_space_or_exit
-
-			f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j" 4)"
+			f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j")"
 			file="${dir}/${f_body}_${dtag}.${ARG_FILE_EXT}"
-
 			create_file_kb "$file" "$ARG_SIZE_KB" || die "Ошибка создания файла: $file"
 			bytes=$(stat -c %s "$file" 2>/dev/null)
 			printf "ФАЙЛ %s\n" "$file"
 			printf "FILE|%s|%s|%sKB|%sB\n" "$file" "$(date +'%F %T')" "$ARG_SIZE_KB" "$bytes" >>"$log"
-
 			j=$((j + 1))
-
 		done
-
 		i=$((i + 1))
 	done
 

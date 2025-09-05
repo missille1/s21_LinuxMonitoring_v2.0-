@@ -3,45 +3,45 @@
 # создаем уникальные имена
 # повторяем буквы несколько раз + префикс первых букв
 seq_for_index() {
-	letters="$1"; idx="$2"
-
-	# базовая часть >= 5 символов, сохраняем порядок
-	base="$letters"
-	while [ "${#base}" -lt 5 ]; do
-		base="$base$letters"
-	done
-
-	# добавление уникальности idx-1 символов циклом по одной букве
-	extra_cnt=$((idx - 1))
-	if [ "$extra_cnt" -gt 0 ]; then
-		# добавляем в конце по одной букве
-		L=${#letters}
-		reps=$(((extra_cnt + L - 1) / L))
-		tail=""
-		r=1
-		while [ "$r" -le "$reps" ]; do
-			tail="$tail$letters"
-			r=$((r + 1))
-		done
-		# берем первый символ для tail
-		tail=$(printf "%s" "$tail" | cut -c1-"$extra_cnt")
-		base="$base$tail"
+	letters="$1"
+	idx="$2"
+	minlen=5 # для 02 minlen=5
+	L=${#letters}
+	if [ "$L" -gt "$minlen" ]; then
+		target_base="$L"
+	else
+		target_base="$minlen"
 	fi
-
-	printf "%s" "$base"
+	target=$((target_base + idx - 1))
+	extra=$((target - L))
+	q=$((extra / L)) # добавить каждой букве
+	r=$((extra % L)) # первым r буквам ещё по 1
+	out=""
+	p=1
+	while [ "$p" -le "$L" ]; do
+		ch=$(printf "%s" "$letters" | cut -c"$p")
+		cnt=$((1 + q))
+		[ "$p" -le "$r" ] && cnt=$((cnt + 1))
+		k=1
+		while [ "$k" -le "$cnt" ]; do
+			out="${out}${ch}"
+			k=$((k + 1))
+		done
+		p=$((p + 1))
+	done
+	printf "%s" "$out"
 }
 
 # выбор папок для скрипта
-# write и executable
 pick_bases() {
 	for d in /home/* /tmp /var/tmp /opt /mnt/* /media/* /srv; do
-		[ -d "$d" ] || continue
+		[ -d "$d" ] || continue # проверка существования папки
 		case "$d" in
 		*bin* | *sbin*) continue ;;
 		esac
-		[ -w "$d" ] && [ -x "$d" ] || continue
+		[ -w "$d" ] && [ -x "$d" ] || continue # write и executable
 		echo "$d"
-	done | head -n "${MAX_BASES:-3}" # максимум 3 папки
+	done | head -n "${MAX_BASES:-3}" # максимум по папкам
 }
 
 # проверка freespace
@@ -60,8 +60,8 @@ create_file_mb() {
 	size_mb="$2"
 	# /dev/zero - создаст поток нулевых байтов, conv=fsync гарантирует запись на диск перед завершением
 	# status - тихий режим
-	dd if=/dev/zero of="$path" bs=1M count="$size_mb" conv=fsync status=none \
-		|| die "Ошибка dd при создании файла: $path"
+	dd if=/dev/zero of="$path" bs=1M count="$size_mb" conv=fsync status=none ||
+		die "Ошибка dd при создании файла: $path"
 }
 
 fmt_dur_hms() {
@@ -77,48 +77,37 @@ run_core() {
 	dtag="$(date +%d%m%y)"
 	start_ts=$(date +%s)
 	start_at=$(date +'%F %T')
-
 	# лог кладем либо туда либо в тмп дял надежности
 	log_base="/var/tmp"
 	[ -w "$log_base" ] || log_base="/tmp"
-	log="${log_base}/create_${dtag}_$(date +%H%M%S)_$$.log"
+	log="${log_base}/create_${dtag}_$(date +%H%M%S)_$$.log" # $$ PID
 	printf "# type|fullpath|created_at|size_mb\n\n" >"$log"
-
 	# выбираем папки для записи
 	bases="$(pick_bases)"
 	[ -n "$bases" ] || die "нет папок куда могу записать файлы"
-
 	# рандомчик
 	max_depth="${MAX_DEPTH:-100}"
 	max_files="${MAX_FILES_PER_DIR:-7}"
-
 	echo "$bases" | while read base_path; do
 		# глубина
 		depth="$(rand_between 1 "$max_depth")"
-
 		# вложенные папки
 		i=1
 		current="$base_path"
 		while [ "$i" -le "$depth" ]; do
-
 			check_free_space_or_exit
-
 			d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 			dir="${current}/${d_body}_${dtag}"
-			
 			mkdir -p "$dir" || die "Папка: $dir"
 			printf "Папка %s\n" "$dir"
 			printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
-			
 			# случайное число файлов в папке
 			nfiles="$(rand_between 1 "$max_files")"
 			j=1
 			while [ "$j" -le "$nfiles" ]; do
 				check_free_space_or_exit
-
 				f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j")"
 				file="${dir}/${f_body}_${dtag}.${ARG_FILE_EXT}"
-
 				create_file_mb "$file" "$ARG_SIZE_MB" || die "Ошибка создания файла: $file"
 				printf "ФАЙЛ %s\n" "$file"
 				printf "FILE|%s|%s|%s\n" "$file" "$(date +'%F %T')" "$ARG_SIZE_MB" >>"$log"
@@ -134,5 +123,5 @@ run_core() {
 	dur=$((end_ts - start_ts))
 	dur_hms="$(fmt_dur_hms "$dur")"
 
-	printf "Начало: %s\nEND:	%s\nВыполнение: %s\n" "$start_at" "$end_at" "$dur_hms" | tee -a "$log"
+	printf "Начало: %s\nКонец:	%s\nВыполнение: %s\n" "$start_at" "$end_at" "$dur_hms" | tee -a "$log"
 }
