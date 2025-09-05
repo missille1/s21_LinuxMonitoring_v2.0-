@@ -77,7 +77,7 @@ run_core() {
 		check_free_space_or_exit
 		d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 		dir="${base_path}/${d_body}_${dtag}"
-		mkdir -p "$dir" || die "Ошибка mkdir: $dir"
+		mkdir -p "$dir" 2>/dev/null || die "Ошибка mkdir: $dir"
 		printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
 		printf "Папка %s\n" "$dir"
 		j=1
