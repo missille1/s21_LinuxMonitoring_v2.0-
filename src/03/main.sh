@@ -4,8 +4,6 @@ source ./util.sh
 source ./args.sh
 source ./core.sh
 
-die(){ printf "Ошибка: %s\n" "$*" >&2; exit 2; }
-
 parse_args "$@" || exit 2
 
 case "$ARG_MODE" in

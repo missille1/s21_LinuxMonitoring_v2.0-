@@ -13,10 +13,10 @@ _rm_file() {
 
 _rmdir_path() {
 	d="$1"
-	case "$f" in *bin*|*sbin*) printf "Пропускаем (bin/sbin): %s\n" "$f"; return 0; esac
+	case "$d" in *bin*|*sbin*) printf "Пропускаем (bin/sbin): %s\n" "$d"; return 0; esac
 	if [ -d "$d" ]; then
-		rmdir -d -- "$d" >/dev/null 2>&1 && printf "Удалена папка %s\n" "$f" || \
-		printf "Ошибка папка не удалена %s\n" "$f"
+		rmdir -d -- "$d" >/dev/null 2>&1 && printf "Удалена папка %s\n" "$d" || \
+		printf "Ошибка папка не удалена %s\n" "$d"
 	else
 		printf "Пропущена папка %s\n" "$d"
 	fi
@@ -27,10 +27,8 @@ delete_by_log() {
 	printf "[лог] %s\n" "$log"
 
 	#соберем список файлов и папок
-	files=$(awk -F'|' '$1=="FILE"{printf $2}' "$log" | sort -u)
-	dirs=$(awk -F'|' '$1=="DIR"{printf $2}' "$log" \
-		| awk -F/ '{printf NF ":" $0}' | sort -t: -k1,1nr | cut -d: -f2-) # NF прономируем папки. 
-										# Сортируем по первому полю в обратном порядке.
+	files=$(awk -F'|' '$1=="FILE"{print $2}' "$log" | sort -u)
+	dirs=$(awk -F'|' '$1=="DIR"{print $2}' "$log" | tac) # cat перевернут
 
 	printf "удаляем файлы\n"
 	for f in $files; do
