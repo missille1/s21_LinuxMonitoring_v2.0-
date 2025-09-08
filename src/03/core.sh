@@ -133,7 +133,7 @@ delete_by_mask() {
           _rmdir_path "$d"
         fi
       done
-  end
+  done
 
   echo "выполнено удаление по маске"
 }
