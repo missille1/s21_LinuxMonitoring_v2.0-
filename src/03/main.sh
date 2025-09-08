@@ -11,5 +11,5 @@ parse_args "$@" || exit 2
 case "$ARG_MODE" in
 	1) delete_by_log "$ARG_LOG" ;;
 	2) delete_by_time "$ARG_T_START" "$ARG_T_END" ;;
-	3) delet_by_mask "$ARG_MASK"
+	3) delete_by_mask "$ARG_MASK"
 esac
