@@ -98,7 +98,7 @@ run_core() {
 			check_free_space_or_exit
 			d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 			dir="${current}/${d_body}_${dtag}"
-			mkdir -p "$dir" || die "Папка: $dir"
+			mkdir -p "$dir" >/dev/null 2>&1 || die "Папка: $dir"
 			printf "Папка %s\n" "$dir"
 			printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
 			# случайное число файлов в папке
