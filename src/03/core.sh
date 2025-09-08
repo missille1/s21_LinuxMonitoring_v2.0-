@@ -22,28 +22,57 @@ _rmdir_path() {
 	fi
 }
 
+# delete_by_log() {
+#   log="$1"
+#   printf "[лог] %s\n" "$log"
+
+#   printf "удаляем файлы\n"
+#   awk -F'|' '$1=="FILE"{print $2}' "$log" \
+#     | sort -u \
+#     | while read -r f; do
+#         [ -n "$f" ] || continue
+#         _rm_file "$f"
+#       done
+# #соберем список файлов и папок. NF нумеруем по количеству /. Сортируем по высоте. Убираем номера. 	
+#   printf "удаляем папки\n"
+#   awk -F'|' '$1=="DIR"{print $2}' "$log" \
+#     | sort -u \
+#     | awk -F/ '{print NF ":" $0}' \
+#     | sort -t: -k1,1nr \
+#     | cut -d: -f2- \
+#     | while read -r d; do
+#         [ -n "$d" ] || continue
+#         _rmdir_path "$d"
+#       done
+
+#   printf "выполнено удаление по логу\n"
+# }
+
 delete_by_log() {
   log="$1"
   printf "[лог] %s\n" "$log"
 
+  # файлы — по одному в строке
+  files=$(awk -F'|' '$1=="FILE"{print $2}' "$log" | sort -u)
+
+  # директории — уникальные, отсортированы по глубине (самые глубокие вперёд)
+  dirs=$(awk -F'|' '$1=="DIR"{print $2}' "$log" \
+        | sort -u \
+        | awk -F/ '{print NF ":" $0}' \
+        | sort -t: -k1,1nr \
+        | cut -d: -f2-)
+
   printf "удаляем файлы\n"
-  awk -F'|' '$1=="FILE"{print $2}' "$log" \
-    | sort -u \
-    | while read -r f; do
-        [ -n "$f" ] || continue
-        _rm_file "$f"
-      done
-#соберем список файлов и папок. NF нумеруем по количеству /. Сортируем по высоте. Убираем номера. 	
+  for f in $files; do
+    [ -n "$f" ] || continue
+    _rm_file "$f"
+  done
+
   printf "удаляем папки\n"
-  awk -F'|' '$1=="DIR"{print $2}' "$log" \
-    | sort -u \
-    | awk -F/ '{print NF ":" $0}' \
-    | sort -t: -k1,1nr \
-    | cut -d: -f2- \
-    | while read -r d; do
-        [ -n "$d" ] || continue
-        _rmdir_path "$d"
-      done
+  for d in $dirs; do
+    [ -n "$d" ] || continue
+    _rmdir_path "$d"
+  done
 
   printf "выполнено удаление по логу\n"
 }
