@@ -104,35 +104,36 @@ delete_by_time() {
 }
 
 delete_by_mask() {
-  mask="$1"                          # например: az_080925
-  letters="$(printf "%s" "$mask" | cut -d_ -f1)"
-  dtag="$(printf "%s" "$mask" | cut -d_ -f2)"
-  body_re="$(_body_re_from_letters "$letters")"
-  dir_re="^${body_re}_${dtag}$"
-  file_re="^${body_re}_${dtag}\.[a-z]{1,3}$"
+  mask="$1"                           # пример: az_080925
+  letters="${mask%%_*}"
+  dtag="${mask##*_}"
 
-  echo "[маска] letters='$letters' date='$dtag' ⇒ RE body='$body_re'"
+  body_re="$(_body_re_from_letters "$letters")"
+  file_re="^${body_re}_${dtag}\.[a-z]{1,3}$"
+  dir_re="^${body_re}_${dtag}$"
+
+  echo "[маска] letters='${letters}' date='${dtag}' ⇒ RE body='${body_re}'"
 
   # файлы
   for base in $(_pick_bases); do
     find "$base" -xdev -type f -name "*_${dtag}.*" -print 2>/dev/null \
-    | while read -r p; do
-        bn="$(basename "$p")"
-        printf "%s\n" "$bn" \
-        | awk -v re="$file_re" 'BEGIN{e=1} $0 ~ re {e=0} END{exit e}' \
-        && _rm_file "$p"
+    | while read -r f; do
+        bn="${f##*/}"
+        if [[ "$bn" =~ $file_re ]]; then
+          _rm_file "$f"
+        fi
       done
 
-    # папки (deep first)
+    # директории: deep-first (по глубине сверху вниз)
     find "$base" -xdev -type d -name "*_${dtag}" -print 2>/dev/null \
     | awk -F/ '{print NF ":" $0}' | sort -t: -k1,1nr | cut -d: -f2- \
     | while read -r d; do
-        bn="$(basename "$d")"
-        printf "%s\n" "$bn" \
-        | awk -v re="$dir_re" 'BEGIN{e=1} $0 ~ re {e=0} END{exit e}' \
-        && _rmdir_path "$d"
+        bn="${d##*/}"
+        if [[ "$bn" =~ $dir_re ]]; then
+          _rmdir_path "$d"
+        fi
       done
-  done
+  end
 
   echo "выполнено удаление по маске"
 }
