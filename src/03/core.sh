@@ -15,7 +15,7 @@ _rmdir_path() {
 	d="$1"
 	case "$d" in *bin*|*sbin*) printf "Пропускаем (bin/sbin): %s\n" "$d"; return 0; esac
 	if [ -d "$d" ]; then
-		rmdir -d -- "$d" >/dev/null 2>&1 && printf "Удалена папка %s\n" "$d" || \
+		rmdir -- "$d" >/dev/null 2>&1 && printf "Удалена папка %s\n" "$d" || \
 		printf "Ошибка папка не удалена %s\n" "$d"
 	else
 		printf "Пропущена папка %s\n" "$d"
@@ -26,9 +26,13 @@ delete_by_log() {
 	log="$1"
 	printf "[лог] %s\n" "$log"
 
-	#соберем список файлов и папок
+	#соберем список файлов и папок. NF нумеруем по количеству /. Сортируем по высоте. Убираем номера. 
 	files=$(awk -F'|' '$1=="FILE"{print $2}' "$log" | sort -u)
-	dirs=$(awk -F'|' '$1=="DIR"{print $2}' "$log" | tac) # cat перевернут
+	dirs=$(awk -F'|' '$1=="DIR"{print $2}' "$log" \
+        | sort -u \
+        | awk -F/ '{print NF ":" $0}' \
+        | sort -t: -k1,1nr \
+        | cut -d: -f2-)
 
 	printf "удаляем файлы\n"
 	for f in $files; do
