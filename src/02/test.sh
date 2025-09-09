@@ -1,39 +1,39 @@
 #!/bin/bash
 
-seq_for_index() {
-	letters="$1"
-	idx="$2"
-	minlen=4 # для 01 minlen=4
-	L=${#letters}
-
-	if [ "$L" -gt "$minlen" ]; then
-		target_base="$L"
-	else
-		target_base="$minlen"
-	fi
-
-	target=$((target_base + idx - 1))
-	extra=$((target - L))
-	# [ "$extra" -lt 0 ] && extra=0
-
-	q=$((extra / L)) # добавить каждой букве
-	r=$((extra % L)) # первым r буквам ещё по 1
-
+_body_re_from_letters() {
+	s="$1"
 	out=""
-	p=1
-	while [ "$p" -le "$L" ]; do
-		ch=$(printf "%s" "$letters" | cut -c"$p")
-		cnt=$((1 + q))
-		[ "$p" -le "$r" ] && cnt=$((cnt + 1))
-		k=1
-		while [ "$k" -le "$cnt" ]; do
-			out="${out}${ch}"
-			k=$((k + 1))
-		done
-		p=$((p + 1))
+	i=1
+	while [ "$i" -le "${#s}" ]; do
+		ch=$(printf "%s" "$s" | cut -c"$i")
+		out="${out}${ch}+"
+		i=$((i + 1))
 	done
+	printf "%s\n" "$out"
+} 
 
-	printf "%s" "$out"
-}
+body_re=$(_body_re_from_letters az)
 
-seq_for_index azaz 3
+echo "______________"
+
+mask=az_280909
+letters="${mask%%_*}"
+dtag="${mask##*_}"
+
+d="az/lol/"
+
+bn="${d##*/}"
+
+echo $letters $dtag $bn "op" $body_re
+
+dir_re="^${body_re}_${dtag}$"
+
+echo $dir_re
+
+echo '________________====='
+
+[[ "$bn" =~ $dir_re ]]
+
+
+
+
