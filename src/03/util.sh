@@ -1,7 +1,7 @@
 #!/bin/bash
 
 die() {
-	printf "ERROR: %s\n" "$*" >&2
+	printf "Ошибка: %s\n" "$*" >&2
 	exit 2
 }
 
@@ -11,10 +11,10 @@ ensure_readable_file() {
 	[ -f "$f" ] && [ -r "$f" ] || die "лог недоступен: $f"
 }
 
-norm_time_min() { 
-	date -d "$1" '+%Y-%m-%d %H:%M' 2>/dev/null;
+norm_time_min() {
+	date -d "$1" '+%Y-%m-%d %H:%M' 2>/dev/null
 }
 
-time_to_epoch() { 
-	date -d "$1" '+%s' 2>/dev/null;
+time_to_epoch() {
+	date -d "$1" '+%s' 2>/dev/null
 }
