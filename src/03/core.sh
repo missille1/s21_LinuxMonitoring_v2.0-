@@ -37,6 +37,15 @@ delete_by_log() {
   echo "выполнено удаление по логу"
 }
 
+_pick_bases() {
+  for d in /home/* /tmp /var/tmp /opt /mnt/* /media/* /srv; do
+    [ -d "$d" ] || continue
+    case "$d" in *bin*|*sbin*) continue ;; esac
+    [ -w "$d" ] && [ -x "$d" ] || continue
+    echo "$d"
+  done
+}
+
 delete_by_time() {
   t_start="$1"      # "YYYY-MM-DD HH:MM"
   t_end="$2"        # "YYYY-MM-DD HH:MM"
