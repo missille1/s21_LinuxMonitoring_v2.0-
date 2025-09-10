@@ -30,6 +30,21 @@ _roots_only() {
   }'
 }
 
+_purge_all_create_logs() {
+  local removed=0
+  for d in /var/tmp /tmp; do
+    [ -d "$d" ] || continue
+    find "$d" -maxdepth 1 -xdev -type f -name 'create_*.log' -print0 2>/dev/null \
+    | while IFS= read -r -d '' f; do
+        if rm -f "$f"; then
+          printf "Удалён лог: %s\n" "$f"
+        else
+          printf "Ошибка удаления лога: %s\n" "$f"
+        fi
+      done
+  done
+}
+
 delete_by_log() {
 	log="$1"
 	echo "[лог] $log"
@@ -42,7 +57,7 @@ delete_by_log() {
 			[ -n "$d" ] || continue
 			_rm_tree "$d"
 		done
-
+	_purge_all_create_logs
 	echo "выполнено удаление по логу"
 }
 
@@ -74,7 +89,7 @@ delete_by_time() {
 		while read -r d; do
 			_rm_tree "$d"
 		done
-
+	_purge_all_create_logs
 	echo "выполнено удаление по времени"
 }
 
@@ -112,6 +127,6 @@ delete_by_mask() {
 				_rm_tree "$d"
 			fi
 		done
-
+	_purge_all_create_logs
 	echo "выполнено удаление по маске"
 }
