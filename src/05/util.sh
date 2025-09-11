@@ -1,5 +1,7 @@
 #!/bin/bash
 
+declare -ag files
+
 usage() {
 	echo "Используются только параметры: $0 1|2|3|4"
 	echo "  1 — все записи, отсортированные по коду ответа"
@@ -15,9 +17,12 @@ check_args() {
 }
 
 check_logs() {
+	local found=(nginx_access_*.log)
 	if ! ls nginx_access_*.log >/dev/null 2>&1; then
 		echo "Логи по маске 'nginx_access_*.log' не найдены в $(pwd)"
 		exit 1
+	else
+		files=("${found[@]}")
 	fi
 }
 
