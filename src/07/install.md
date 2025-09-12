@@ -64,3 +64,26 @@ http://192.168.56.104:3000 (admin/admin)
 Grafana: Connections → Data sources → Add data source → Prometheus.
 URL: http://192.168.56.104:9090 → Save & Test.
 
+### add graph
+cpu
+```
+100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)
+```
+ram
+```
+node_memory_MemAvailable_bytes / 1024 / 1024 / 1024
+(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 
+```
+disk
+```
+sum by (instance, mountpoint) (
+  node_filesystem_avail_bytes{fstype!~"tmpfs|devtmpfs|overlay"}
+) / 1024 / 1024 / 1024
+```
+write and read disk
+```
+sum by (instance) (rate(node_disk_writes_completed_total{device=~"sd.*|vd.*|nvme.*"}[1m]))
+sum by (instance) (rate(node_disk_reads_completed_total{device=~"sd.*|vd.*|nvme.*"}[1m]))
+```
+###
+![grafana my]( img/Screenshot%20From%202025-09-13%2000-35-23.png "Optional title")
