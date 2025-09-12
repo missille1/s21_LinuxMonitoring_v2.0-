@@ -15,3 +15,7 @@ check_logs() {
 		exit 1
 	fi
 }
+
+check_goaccess() {
+	command -v goaccess >/dev/null || { echo "goaccess не установлен"; exit 1; }
+}
