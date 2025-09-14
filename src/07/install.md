@@ -57,12 +57,12 @@ sudo systemctl restart prometheus
 ### open prometheus and grafana on host
 apply hostonly adapter 2 virtualbox
 ```
-http://192.168.56.104:9090
-http://192.168.56.104:3000 (admin/admin)
+http://192.168.56.107:9090
+http://192.168.56.107:3000 (admin/admin)
 ```
 ### connect prometheus to grafana
 Grafana: Connections → Data sources → Add data source → Prometheus.
-URL: http://192.168.56.104:9090 → Save & Test.
+URL: http://192.168.56.107:9090 → Save & Test.
 
 ### add graph
 cpu
