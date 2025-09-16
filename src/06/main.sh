@@ -7,11 +7,12 @@ check_goaccess
 
 main() {
 goaccess nginx_access_*.log \
-  --log-format=COMBINED \
-  --date-format=%d/%b/%Y \
-  --time-format=%T \
-    -o ./goaccess.html
-
+    --log-format=COMBINED \
+    --real-time-html \
+    --addr=127.0.0.1 \
+    --port=7890 \
+    --daemonize
+  echo "[INFO] GoAccess запущен."
 }
 
 main "$@"
