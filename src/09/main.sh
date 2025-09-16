@@ -2,7 +2,6 @@
 
 source core.sh
 
-# Проверка аргументов
 if [ $# -gt 0 ]; then
     echo "Ошибка: Скрипт запускается без аргументов" >&2
     echo "Использование: $0" >&2
@@ -21,3 +20,6 @@ main_loop() {
 }
 
 main_loop
+
+# http://192.168.56.107:9110/metrics
+# promtool check config /etc/prometheus/prometheus.yml
