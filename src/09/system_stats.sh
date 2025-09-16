@@ -75,7 +75,8 @@ write_metrics_once() {
     echo "my_disk_free_bytes{mount=\"${mountpoint}\"} ${d_free}"
   } >"$tmp"
 
-  mv -f "$tmp" "$metrics_file"  
+  mv -f "$tmp" "$metrics_file"
+  chmod 644 "$metrics_file"
 }
 
 main_loop() {
