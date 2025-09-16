@@ -1,7 +1,7 @@
 #!/bin/bash
 
 iterval=3                       
-metrics_file="/usr/share/nginx/html/metrics/metrics.prom"
+metrics_file="/var/lib/nginx/html/metrics/metrics.prom"
 mountpoint="/"                  
 
 ensure_dir() {
