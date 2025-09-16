@@ -87,7 +87,7 @@ run_core() {
 	bases="$(pick_bases)"
 	[ -n "$bases" ] || die "нет папок куда могу записать файлы"
 	# рандомчик
-	max_depth="${MAX_DEPTH:-40}"
+	max_depth="${MAX_DEPTH:-100}"
 	max_files="${MAX_FILES_PER_DIR:-20}"
 	
 	echo "$bases" | while read base_path; do
