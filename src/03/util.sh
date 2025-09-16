@@ -18,3 +18,13 @@ norm_time_min() {
 time_to_epoch() {
 	date -d "$1" '+%s' 2>/dev/null
 }
+
+require_datetime_with_minutes() {
+  local s="$1"
+  # проверка что указано время
+  if [[ "$s" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}$ ]]; then
+    printf '%s' "$s"
+    return 0
+  fi
+  return 1
+}

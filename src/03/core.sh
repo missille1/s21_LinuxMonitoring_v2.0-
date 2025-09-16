@@ -31,18 +31,18 @@ _roots_only() {
 }
 
 _purge_all_create_logs() {
-  local removed=0
-  for d in /var/tmp /tmp; do
-    [ -d "$d" ] || continue
-    find "$d" -maxdepth 1 -xdev -type f -name 'create_*.log' -print0 2>/dev/null \
-    | while IFS= read -r -d '' f; do
-        if rm -f "$f"; then
-          printf "Удалён лог: %s\n" "$f"
-        else
-          printf "Ошибка удаления лога: %s\n" "$f"
-        fi
-      done
-  done
+	local removed=0
+	for d in /var/tmp /tmp; do
+		[ -d "$d" ] || continue
+		find "$d" -maxdepth 1 -xdev -type f -name 'create_*.log' -print0 2>/dev/null |
+			while IFS= read -r -d '' f; do
+				if rm -f "$f"; then
+					printf "Удалён лог: %s\n" "$f"
+				else
+					printf "Ошибка удаления лога: %s\n" "$f"
+				fi
+			done
+	done
 }
 
 delete_by_log() {
@@ -73,6 +73,26 @@ _pick_bases() {
 delete_by_time() {
 	t_start="$1"
 	t_end="$2"
+
+	# Проверка формата времени
+	if ! require_datetime_with_minutes "$t_start"; then
+		echo "Ошибка: Неверный формат начального времени '$t_start'" >&2
+		echo "Ожидается: YYYY-MM-DD HH:MM" >&2
+		return 1
+	fi
+
+	if ! require_datetime_with_minutes "$t_end"; then
+		echo "Ошибка: Неверный формат конечного времени '$t_end'" >&2
+		echo "Ожидается: YYYY-MM-DD HH:MM" >&2
+		return 1
+	fi
+
+	# Проверка что начальное время не позже конечного
+	if [[ "$(date -d "$t_start" +%s)" -gt "$(date -d "$t_end" +%s)" ]]; then
+		echo "Ошибка: Начальное время '$t_start' позже конечного '$t_end'" >&2
+		return 1
+	fi
+
 	t_end_plus="$(date -d "$t_end +1 minute" '+%Y-%m-%d %H:%M')" || t_end_plus="$t_end"
 
 	echo "[время] $t_start .. $t_end (вкл. минуту конца)"
