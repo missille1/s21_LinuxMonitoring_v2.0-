@@ -77,7 +77,7 @@ run_core() {
 	dtag="$(date +%d%m%y)"
 	start_ts=$(date +%s)
 	start_at=$(date +'%F %T')
-	# лог кладем либо туда либо в тмп дял надежности
+	# лог кладем либо туда либо в тмп для надежности
 	log_base="/var/tmp"
 	[ -w "$log_base" ] || log_base="/tmp"
 	log="${log_base}/create_${dtag}_$(date +%H%M%S)_$$.log" # $$ PID
@@ -87,8 +87,8 @@ run_core() {
 	bases="$(pick_bases)"
 	[ -n "$bases" ] || die "нет папок куда могу записать файлы"
 	# рандомчик
-	max_depth="${MAX_DEPTH:-100}"
-	max_files="${MAX_FILES_PER_DIR:-7}"
+	max_depth="${MAX_DEPTH:-40}"
+	max_files="${MAX_FILES_PER_DIR:-20}"
 	
 	echo "$bases" | while read base_path; do
 		# глубина
