@@ -74,19 +74,6 @@ delete_by_time() {
 	t_start="$1"
 	t_end="$2"
 
-	# Проверка формата времени
-	if ! require_datetime_with_minutes "$t_start"; then
-		echo "Ошибка: Неверный формат начального времени '$t_start'" >&2
-		echo "Ожидается: YYYY-MM-DD HH:MM" >&2
-		return 1
-	fi
-
-	if ! require_datetime_with_minutes "$t_end"; then
-		echo "Ошибка: Неверный формат конечного времени '$t_end'" >&2
-		echo "Ожидается: YYYY-MM-DD HH:MM" >&2
-		return 1
-	fi
-
 	# Проверка что начальное время не позже конечного
 	if [[ "$(date -d "$t_start" +%s)" -gt "$(date -d "$t_end" +%s)" ]]; then
 		echo "Ошибка: Начальное время '$t_start' позже конечного '$t_end'" >&2

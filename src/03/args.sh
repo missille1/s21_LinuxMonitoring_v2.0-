@@ -23,33 +23,29 @@ ask_log() {
 }
 
 ask_time_range() {
-	while :; do
-		printf "Время начала (YYYY-MM-DD HH:MM): "
-		read -r t1
-		s1="$(norm_time_min "$t1")"
-		[ -n "$s1" ] || {
-			echo "Неверный формат."
-			continue
-		}
-		e1="$(time_to_epoch "$s1")"
+  while :; do
+    printf "Время начала (YYYY-MM-DD HH:MM): "
+    read -r t1
+    #  требуем время
+    require_datetime_with_minutes "$t1" || { echo "Нужно указать ДАТУ И ВРЕМЯ в формате YYYY-MM-DD HH:MM."; continue; }
+    # валидность даты
+    s1="$(norm_time_min "$t1")"
+    [ -n "$s1" ] || { echo "Неверная дата/время."; continue; }
+    e1="$(time_to_epoch "$s1")" || { echo "Неверная дата/время."; continue; }
 
-		printf "Время конца   (YYYY-MM-DD HH:MM): "
-		read -r t2
-		s2="$(norm_time_min "$t2")"
-		[ -n "$s2" ] || {
-			echo "Неверный формат."
-			continue
-		}
-		e2="$(time_to_epoch "$s2")"
+    printf "Время конца   (YYYY-MM-DD HH:MM): "
+    read -r t2
+    require_datetime_with_minutes "$t2" || { echo "Нужно указать ДАТУ И ВРЕМЯ в формате YYYY-MM-DD HH:MM."; continue; }
+    s2="$(norm_time_min "$t2")"
+    [ -n "$s2" ] || { echo "Неверная дата/время."; continue; }
+    e2="$(time_to_epoch "$s2")" || { echo "Неверная дата/время."; continue; }
 
-		[ "$e1" -le "$e2" ] || {
-			echo "Старт позже конца — повторите."
-			continue
-		}
-		ARG_T_START="$s1"
-		ARG_T_END="$s2"
-		return 0
-	done
+    [ "$e1" -le "$e2" ] || { echo "Старт позже конца — повторите."; continue; }
+
+    ARG_T_START="$s1"
+    ARG_T_END="$s2"
+    return 0
+  done
 }
 
 ask_mask() {

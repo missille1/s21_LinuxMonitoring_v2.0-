@@ -20,14 +20,12 @@ time_to_epoch() {
 }
 
 require_datetime_with_minutes() {
-	local s="$1"
-	if [[ ! "$s" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}$ ]]; then
-        return 1
-    fi
-	# Проверяем что дата может быть распаршена
-	if ! date -d "$s" "+%Y-%m-%d %H:%M" >/dev/null 2>&1; then
-		return 1
-	fi
-	printf '%s' "$s"
-	return 0
+  local s="$1"
+  # Проверяем только наличие компонента времени (не диапазон часов/минут).
+  if [[ "$s" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}$ ]]; then
+    printf '%s' "$s"
+    return 0
+  fi
+  return 1
 }
+
