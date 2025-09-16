@@ -48,6 +48,10 @@ write_metrics_once() {
     read -r mem_t mem_a < <(mem_bytes)
     read -r d_tot d_free < <(disk_bytes "$mountpoint")
 
+	# HELP <metric_name> <description>
+	# TYPE <metric_name> <type>
+	# <metric_name>{<labels>} <value>
+	
     {
         echo "# HELP my_cpu_usage_percent CPU usage in percent"
         echo "# TYPE my_cpu_usage_percent gauge"
