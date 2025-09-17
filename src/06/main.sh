@@ -12,7 +12,6 @@ pkill goaccess 2>/dev/null
 main() {
 	goaccess nginx_access_*.log \
         --log-format=COMBINED \
-		--real-time-html 2>/dev/null \
 		-o report.html 
 
     darkhttpd . --port 9191 --index report.html > /dev/null 2>&1 &
