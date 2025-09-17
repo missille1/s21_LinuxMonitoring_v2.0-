@@ -41,7 +41,7 @@ pick_bases() {
 		esac
 		[ -w "$d" ] && [ -x "$d" ] || continue # write и executable
 		echo "$d"
-	done | head -n "${MAX_BASES:-3}" # максимум по папкам
+	done | head -n "${MAX_BASES:-7}" # максимум по папкам
 }
 
 safe_path_ok() {
