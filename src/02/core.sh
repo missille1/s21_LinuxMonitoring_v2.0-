@@ -44,13 +44,29 @@ pick_bases() {
 	done | head -n "${MAX_BASES:-3}" # максимум по папкам
 }
 
+safe_path_ok() {
+	max_path_len=4096
+	max_name_len=255
+	local p="$1"
+	local bn="${p##*/}"
+	((${#bn} <= max_name_len)) && ((${#p} < max_path_len - 8))
+}
+
+safe_mkdir() {
+	local d="$1"
+	safe_path_ok "$d" || return 1
+	mkdir -p "$d"
+}
+
 # проверка freespace
 check_free_space_or_exit() {
 	# 1 gb = 1048576 kb
-	min_free_kb="${MIN_FREE_KB:-1048576}" # берем либо глобалку либо указанный размер
-	avail_kb=$(df -Pk / | awk 'NR==2{print $4}')
-	if [ "$avail_kb" -le "$min_free_kb" ]; then
-		printf "Недостаточно места в /: %sКБ <= %sКБ - скрипт остановлен\n" "$avail_kb" "$min_free_kb" >&2
+	local probe_path="/"
+	min_free_mb=1024
+	avail=$(df -B1 --output=avail "$probe_path" | awk 'NR==2{print $1}')
+	thr=$((min_free_mb * 1024 * 1024))
+	if ((avail < thr)); then
+		printf "Недостаточно места в / скрипт остановлен\n"
 		exit 3
 	fi
 }
@@ -89,7 +105,7 @@ run_core() {
 	# рандомчик
 	max_depth="${MAX_DEPTH:-100}"
 	max_files="${MAX_FILES_PER_DIR:-20}"
-	
+
 	echo "$bases" | while read base_path; do
 		# глубина
 		depth="$(rand_between 1 "$max_depth")"
@@ -98,9 +114,14 @@ run_core() {
 		current="$base_path"
 		while [ "$i" -le "$depth" ]; do
 			check_free_space_or_exit
+
 			d_body="$(seq_for_index "$ARG_LETTERS_DIRS" "$i")"
 			dir="${current}/${d_body}_${dtag}"
-			mkdir -p "$dir" >/dev/null 2>&1 || die "Папка: $dir"
+
+			if ! safe_mkdir "$dir"; then
+				echo "Слишком длинный путь"
+        		break
+      		fi
 			printf "Папка %s\n" "$dir"
 			printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
 			# случайное число файлов в папке
@@ -108,13 +129,21 @@ run_core() {
 			j=1
 			while [ "$j" -le "$nfiles" ]; do
 				check_free_space_or_exit
+
 				f_body="$(seq_for_index "$ARG_FILE_LETTERS" "$j")"
 				file="${dir}/${f_body}_${dtag}.${ARG_FILE_EXT}"
+
+				if ! safe_path_ok "$file"; then
+          			echo "Слишком длинный путь"
+          			break
+        		fi
+
 				create_file_mb "$file" "$ARG_SIZE_MB" || die "Ошибка создания файла: $file"
 				printf "ФАЙЛ %s\n" "$file"
 				printf "FILE|%s|%s|%s\n" "$file" "$(date +'%F %T')" "$ARG_SIZE_MB" >>"$log"
 				j=$((j + 1))
 			done
+
 			current="$dir" # опускаемся вглубь внутри папки
 			i=$((i + 1))
 		done
@@ -126,5 +155,5 @@ run_core() {
 	dur_hms="$(fmt_dur_hms "$dur")"
 
 	printf "Начало: %s\nКонец:\t%s\nВыполнение: %s\n[ok] Создано. Лог: %s\n" \
-	"$start_at" "$end_at" "$dur_hms" "$log" | tee -a "$log"
+		"$start_at" "$end_at" "$dur_hms" "$log" | tee -a "$log"
 }
