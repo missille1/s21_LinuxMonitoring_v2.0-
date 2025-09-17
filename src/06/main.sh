@@ -14,7 +14,7 @@ main() {
         --log-format=COMBINED \
 		-o report.html 
 
-    darkhttpd report.html --port 9191 > /dev/null 2>&1 &
+    darkhttpd . --port 9191 --index report.html > /dev/null 2>&1 &
     echo "Веб-сервер запущен на порту 9191"
 
     goaccess nginx_access_*.log \
