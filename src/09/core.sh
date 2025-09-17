@@ -1,7 +1,15 @@
 #!/bin/bash
 
-metrics_file="/var/lib/nginx/html/metrics/metrics.prom"
-mountpoint="/"   
+
+check() {
+	if [ $# -gt 0 ]; then
+    echo "Ошибка: Скрипт запускается без аргументов" >&2
+    echo "Использование: $0" >&2
+    exit 1
+fi
+}
+
+metrics_file="/var/lib/nginx/html/metrics/metrics.prom" 
 
 ensure_dir() {
     local d; d="$(dirname "$metrics_file")"
@@ -43,6 +51,7 @@ disk_bytes() {
 write_metrics_once() {
     local tmp; tmp="$(mktemp)"
     local cpu mem_t mem_a d_tot d_free
+	mountpoint="/"  
 
     cpu="$(cpu_usage_percent)"
     read -r mem_t mem_a < <(mem_bytes)

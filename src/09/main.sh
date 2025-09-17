@@ -2,23 +2,16 @@
 
 source core.sh
 
-if [ $# -gt 0 ]; then
-    echo "Ошибка: Скрипт запускается без аргументов" >&2
-    echo "Использование: $0" >&2
-    exit 1
-fi
-
-iterval=3                                      
-
 main_loop() {
-    ensure_dir
-    trap 'exit 0' INT TERM
-    while :; do
-        write_metrics_once
-        sleep "$iterval"
-    done
+	ensure_dir
+	trap 'exit 0' INT TERM
+	while :; do
+		write_metrics_once
+		sleep 3
+	done
 }
 
+check "$@"
 main_loop
 
 # http://192.168.56.107:9110/metrics
