@@ -120,8 +120,8 @@ run_core() {
 
 			if ! safe_mkdir "$dir"; then
 				echo "Слишком длинный путь"
-        		break
-      		fi
+				break
+			fi
 			printf "Папка %s\n" "$dir"
 			printf "DIR|%s|%s|\n" "$dir" "$(date +'%F %T')" >>"$log"
 			# случайное число файлов в папке
@@ -134,9 +134,9 @@ run_core() {
 				file="${dir}/${f_body}_${dtag}.${ARG_FILE_EXT}"
 
 				if ! safe_path_ok "$file"; then
-          			echo "Слишком длинный путь"
-          			break
-        		fi
+					echo "Слишком длинный путь"
+					break
+				fi
 
 				create_file_mb "$file" "$ARG_SIZE_MB" || die "Ошибка создания файла: $file"
 				printf "ФАЙЛ %s\n" "$file"
